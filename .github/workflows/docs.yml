@@ -1,19 +1,22 @@
+# Optimized by ci-cost (https://github.com/mariotavarez/ci-cost)
+# Applied 2 optimizations:
+# - [HIGH] Add npm dependency cache to "build" job
+# - [LOW] Use shallow clone in "build" job
+# Estimated savings: ~4 min/run
+#
 name: Docs
-
-on:
+'on':
   push:
-    branches: [master]
-  workflow_dispatch:
-
+    branches:
+      - master
+  workflow_dispatch: null
 permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
   group: docs-pages
   cancel-in-progress: false
-
 jobs:
   filter:
     runs-on: ubuntu-latest
@@ -60,7 +63,6 @@ jobs:
           echo "should_deploy=$SHOULD_DEPLOY"
 
           echo "should_deploy=$SHOULD_DEPLOY" >> "$GITHUB_OUTPUT"
-
   build:
     needs: filter
     if: needs.filter.outputs.should_deploy == 'true'
@@ -74,6 +76,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 24
+          cache: npm
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
